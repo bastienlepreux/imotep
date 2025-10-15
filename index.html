@@ -3,15 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>A Kaz Aw – Minimal</title>
+  <title>A Kaz Aw – Minimal v2</title>
   <style>
-    :root{
-      --bg:#0b1020;--surface:#0f1428;--text:#e8ecf8;--muted:#9fb0d5;--line:#1e2a4a;--accent:#6ea8fe
-    }
+    :root{--bg:#0b1020;--surface:#0f1428;--text:#e8ecf8;--muted:#9fb0d5;--line:#1e2a4a;--accent:#6ea8fe;--ok:#3ddc84;--warn:#ffd166}
     *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0;font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#0b1020,#0b1020 40%,#0e1836);color:var(--text)}
-    .wrap{max-width:960px;margin:0 auto;padding:20px}
+    .wrap{max-width:1080px;margin:0 auto;padding:20px}
     header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
     .brand{display:flex;align-items:center;gap:10px}
     .logo{width:34px;height:34px;border-radius:8px;background:radial-gradient(80% 80% at 30% 30%,#6ea8fe,transparent 60%),radial-gradient(80% 80% at 70% 60%,#3ddc84,transparent 70%),linear-gradient(135deg,#121a33,#1b2a57)}
@@ -22,6 +20,7 @@
     .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
     .grid{display:grid;gap:10px}
     .two{grid-template-columns:1fr 1fr}
+    .three{grid-template-columns:1fr 1fr 1fr}
     label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
     input,select,button,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0f1731;color:var(--text)}
     button{cursor:pointer}
@@ -31,7 +30,11 @@
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .space{height:8px}
     .right{margin-left:auto}
-    @media(min-width:860px){.two{grid-template-columns:1fr 1fr}}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:#0f1731;font-size:11px;color:var(--muted)}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal .box{max-width:720px;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+    svg{max-width:100%}
+    @media(min-width:900px){.two{grid-template-columns:1fr 1fr}.three{grid-template-columns:repeat(3,1fr)}}
   </style>
 </head>
 <body>
@@ -40,13 +43,13 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>DOM‑TOM Immo</h1>
-          <div class="muted" style="font-size:12px">Location • Vendeur • Espace client</div>
+          <h1>A Kaz Aw</h1>
+          <div class="muted" style="font-size:12px">Location • Vente • Espace client</div>
         </div>
       </div>
       <nav role="tablist" aria-label="Navigation principale">
         <div class="tab" role="tab" aria-selected="true" data-tab="location">Location</div>
-        <div class="tab" role="tab" aria-selected="false" data-tab="vendeur">Vendeur</div>
+        <div class="tab" role="tab" aria-selected="false" data-tab="vendeur">Vente</div>
         <div class="tab" role="tab" aria-selected="false" data-tab="espace">Espace client</div>
       </nav>
     </header>
@@ -54,10 +57,10 @@
     <!-- LOCATION -->
     <section id="location" role="tabpanel" aria-label="Location" class="grid">
       <div class="card">
-        <div class="row">
-          <div style="flex:1">
+        <div class="grid three">
+          <div>
             <label>Territoire</label>
-            <select id="f-territory">
+            <select id="rl-territory">
               <option value="">Tous</option>
               <option>Guadeloupe</option>
               <option>Martinique</option>
@@ -67,107 +70,118 @@
               <option>Saint‑Martin</option>
             </select>
           </div>
-          <div style="flex:1">
+          <div>
             <label>Type</label>
-            <select id="f-type">
-              <option value="">Tous</option>
-              <option>Appartement</option>
-              <option>Maison</option>
-              <option>Studio</option>
-            </select>
+            <select id="rl-type"><option value="">Tous</option><option>Appartement</option><option>Maison</option><option>Studio</option><option>Colocation</option></select>
           </div>
-          <div style="flex:1">
+          <div>
             <label>Budget max (€ / mois)</label>
-            <input id="f-budget" inputmode="numeric" placeholder="ex: 1200" />
+            <input id="rl-budget" inputmode="numeric" placeholder="ex: 1200" />
           </div>
-          <div class="right" style="width:auto">
-            <label>&nbsp;</label>
-            <button id="btn-reset">Réinitialiser</button>
+          <div>
+            <label>Meublé / Nu / Colocation</label>
+            <select id="rl-meuble"><option value="">Tous</option><option>Meublé</option><option>Nu</option><option>Colocation</option></select>
           </div>
+          <div>
+            <label>Nb. de chambres</label>
+            <select id="rl-bed"><option value="">Tous</option><option>1</option><option>2</option><option>3</option><option>4+</option></select>
+          </div>
+          <div>
+            <label>Charges</label>
+            <select id="rl-charges"><option value="">Avec ou sans</option><option value="true">Charges comprises</option><option value="false">Hors charges</option></select>
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button id="rl-reset" class="right" style="width:auto">Réinitialiser</button>
         </div>
       </div>
       <div class="card">
-        <div class="row"><strong>Résultats</strong><span class="muted" id="k-count">–</span></div>
+        <div class="row"><strong>Résultats</strong><span class="muted" id="rl-count">–</span></div>
         <div class="space"></div>
-        <div class="list" id="list"></div>
+        <div class="list" id="rl-list"></div>
       </div>
     </section>
 
-    <!-- VENDEUR -->
-    <section id="vendeur" role="tabpanel" aria-label="Vendeur" hidden>
-      <div class="card grid two">
-        <div>
-          <label>Titre de l'annonce</label>
-          <input id="a-title" placeholder="T3 vue mer, Le Gosier" />
+    <!-- VENTE (list + details) -->
+    <section id="vendeur" role="tabpanel" aria-label="Vente" hidden>
+      <div class="card">
+        <div class="grid three">
+          <div>
+            <label>Territoire</label>
+            <select id="sl-territory"><option value="">Tous</option><option>Guadeloupe</option><option>Martinique</option><option>Guyane</option><option>La Réunion</option></select>
+          </div>
+          <div>
+            <label>Type</label>
+            <select id="sl-type"><option value="">Tous</option><option>Appartement</option><option>Maison</option><option>Local commercial</option></select>
+          </div>
+          <div>
+            <label>Prix max (€)</label>
+            <input id="sl-budget" inputmode="numeric" placeholder="ex: 300000" />
+          </div>
         </div>
-        <div>
-          <label>Territoire</label>
-          <select id="a-territory"><option>Guadeloupe</option><option>Martinique</option><option>Guyane</option><option>La Réunion</option><option>Mayotte</option><option>Saint‑Martin</option></select>
+        <div class="row" style="margin-top:10px">
+          <button id="sl-reset" class="right" style="width:auto">Réinitialiser</button>
         </div>
-        <div>
-          <label>Type</label>
-          <select id="a-type"><option>Appartement</option><option>Maison</option><option>Studio</option></select>
-        </div>
-        <div>
-          <label>Loyer mensuel (€)</label>
-          <input id="a-price" inputmode="numeric" />
-        </div>
-        <div style="grid-column:1/-1">
-          <label>Description</label>
-          <textarea id="a-desc" rows="3" placeholder="Cuisine équipée, balcon, parking…"></textarea>
-        </div>
-        <div style="grid-column:1/-1" class="row">
-          <button id="btn-save">Publier (local)</button>
-          <span class="muted">Stocké en localStorage pour ce prototype.</span>
-        </div>
+      </div>
+      <div class="card">
+        <div class="row"><strong>Biens en vente</strong><span class="muted" id="sl-count">–</span></div>
+        <div class="space"></div>
+        <div class="list" id="sl-list"></div>
       </div>
     </section>
 
     <!-- ESPACE CLIENT -->
     <section id="espace" role="tabpanel" aria-label="Espace client" hidden>
-      <div class="card" id="auth-card">
-        <div class="row">
-          <div style="flex:1;max-width:340px">
-            <label>Email</label>
-            <input id="u-email" placeholder="nom@exemple.com" />
-          </div>
-          <div style="width:auto">
-            <label>&nbsp;</label>
-            <button id="btn-login">Se connecter</button>
-          </div>
+      <div class="card grid two">
+        <div>
+          <label>Votre rôle</label>
+          <select id="role"><option>Locataire</option><option>Loueur</option><option>Vendeur</option></select>
+        </div>
+        <div>
+          <label>Email</label>
+          <input id="u-email" placeholder="nom@exemple.com" />
+        </div>
+        <div style="grid-column:1/-1" class="row">
+          <button id="btn-start" style="width:auto">Entrer dans l'espace</button>
+          <span class="muted">(Démo locale, aucune donnée envoyée)</span>
         </div>
       </div>
-      <div class="card" id="dash-card" hidden>
-        <div class="row"><strong>Bonjour, <span id="u-name">client</span></strong><button class="right" id="btn-logout" style="width:auto">Se déconnecter</button></div>
+      <div class="card" id="doc-card" hidden>
+        <div class="row"><strong>Votre documentation</strong><button id="btn-logout" class="right" style="width:auto">Changer de rôle</button></div>
         <div class="space"></div>
-        <div class="grid two">
-          <div>
-            <div class="muted">Favoris</div>
-            <div id="fav-list" class="list"></div>
-          </div>
-          <div>
-            <div class="muted">Dernières annonces ajoutées</div>
-            <div id="my-list" class="list"></div>
-          </div>
+        <div id="doc-actions" class="grid two"></div>
+        <div class="space"></div>
+        <div class="card">
+          <strong>Rappels utiles (droit FR)</strong>
+          <ul class="muted">
+            <li>Bail d'habitation: mentions obligatoires, dépôt de garantie, état des lieux, diagnostics (DPE, électricité…).</li>
+            <li>Indexation IRL: plafonnement selon l’Indice de Référence des Loyers.</li>
+            <li>Vente: diagnostics techniques, délai de rétractation (SRU), modalités acte de vente.</li>
+            <li>Locations meublées/colocation: inventaire, meubles obligatoires, clause de solidarité.</li>
+          </ul>
         </div>
       </div>
     </section>
+  </div>
+
+  <!-- Modal Vente Details -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="box">
+      <div class="row"><strong id="m-title">Détails</strong><button id="m-close" class="right" style="width:auto">Fermer</button></div>
+      <div class="space"></div>
+      <div id="m-body"></div>
+    </div>
   </div>
 
 <script>
 // Utilities
 const $ = (q)=>document.querySelector(q);
 const $all = (q)=>Array.from(document.querySelectorAll(q));
-const fmtEur = (n)=> new Intl.NumberFormat('fr-FR').format(n||0);
+const fmtEur = (n)=> new Intl.NumberFormat('fr-FR').format(Number(n)||0);
+const escapeHTML = (s='')=> String(s).replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+const daysBetween = (a,b)=> Math.round((b - a)/(1000*60*60*24));
 
-// Sample minimal dataset
-let listings = JSON.parse(localStorage.getItem('dt_min_listings')||'null') || [
-  {id:'L-001', title:'Studio centre, Fort‑de‑France', territory:'Martinique', type:'Studio', price:620, desc:'Proche transports'},
-  {id:'L-002', title:'T2 meublé, Kourou', territory:'Guyane', type:'Appartement', price:850, desc:'Quartier calme'},
-  {id:'L-003', title:'Maison T4, Le Gosier', territory:'Guadeloupe', type:'Maison', price:1650, desc:'Jardin, parking'},
-];
-
-// Tab logic
+// Tabs
 $all('.tab').forEach(t=>t.addEventListener('click',()=>{
   $all('.tab').forEach(x=>x.setAttribute('aria-selected','false'));
   t.setAttribute('aria-selected','true');
@@ -175,64 +189,178 @@ $all('.tab').forEach(t=>t.addEventListener('click',()=>{
   ['location','vendeur','espace'].forEach(id=>{ const el = document.getElementById(id); el.hidden = (id!==tab); });
 }));
 
-// Render list (Location)
-function renderList(){
-  const listEl = $('#list');
-  const terr = $('#f-territory').value; const type=$('#f-type').value; const budget = Number($('#f-budget').value||Infinity);
-  const filtered = listings.filter(x=> (!terr||x.territory===terr) && (!type||x.type===type) && (x.price<=budget));
-  $('#k-count').textContent = `(${filtered.length})`;
-  listEl.innerHTML = filtered.map(x=> `
+// ---------------- RENTALS ----------------
+let rentalListings = JSON.parse(localStorage.getItem('dt_rentals')||'null') || [
+  {id:'R-001', title:'Studio meublé, Fort‑de‑France', territory:'Martinique', type:'Studio', mode:'Meublé', bedrooms:1, price:620, charges:true, desc:'Centre, proche transports'},
+  {id:'R-002', title:'T2 nu, Kourou', territory:'Guyane', type:'Appartement', mode:'Nu', bedrooms:1, price:780, charges:false, desc:'Quartier calme'},
+  {id:'R-003', title:'Colocation T4, Le Gosier', territory:'Guadeloupe', type:'Colocation', mode:'Colocation', bedrooms:3, price:450, charges:true, desc:'Chambre en coloc, jardin'},
+  {id:'R-004', title:'Maison T3 meublée, Saint‑Denis', territory:'La Réunion', type:'Maison', mode:'Meublé', bedrooms:2, price:1450, charges:false, desc:'Petite cour'}
+];
+
+function renderRentals(){
+  const terr=$('#rl-territory').value; const typ=$('#rl-type').value; const budget=Number($('#rl-budget').value||Infinity);
+  const meub=$('#rl-meuble').value; const bed=$('#rl-bed').value; const ch=$('#rl-charges').value;
+  const filtered = rentalListings.filter(x=>
+    (!terr||x.territory===terr) && (!typ||x.type===typ) && (x.price<=budget) && (!meub||x.mode===meub) && (!bed|| (bed==='4+'? x.bedrooms>=4 : x.bedrooms==Number(bed))) && (!ch || String(x.charges)===ch)
+  );
+  $('#rl-count').textContent = `(${filtered.length})`;
+  $('#rl-list').innerHTML = filtered.map(x=>`
     <div class="item">
       <div>
         <div><strong>${escapeHTML(x.title)}</strong></div>
-        <div class="muted">${x.territory} • ${x.type}</div>
+        <div class="muted">${x.territory} • ${x.type} • ${x.mode} • ${x.bedrooms} ch • ${x.charges?'charges comprises':'hors charges'}</div>
       </div>
       <div><strong>${fmtEur(x.price)} €/mois</strong></div>
     </div>
   `).join('');
 }
-['f-territory','f-type','f-budget'].forEach(id=> document.getElementById(id).addEventListener('input', renderList));
-$('#btn-reset').onclick = ()=>{ ['f-territory','f-type','f-budget'].forEach(id=> document.getElementById(id).value=''); renderList(); };
-renderList();
+['rl-territory','rl-type','rl-budget','rl-meuble','rl-bed','rl-charges'].forEach(id=> document.getElementById(id).addEventListener('input', renderRentals));
+$('#rl-reset').onclick = ()=>{ ['rl-territory','rl-type','rl-budget','rl-meuble','rl-bed','rl-charges'].forEach(id=> document.getElementById(id).value=''); renderRentals(); };
+renderRentals();
 
-// Vendeur: save new listing (local only)
-$('#btn-save').onclick = ()=>{
-  const l = {
-    id: crypto.randomUUID().slice(0,8),
-    title: $('#a-title').value.trim(),
-    territory: $('#a-territory').value,
-    type: $('#a-type').value,
-    price: Number($('#a-price').value||0),
-    desc: $('#a-desc').value.trim()
-  };
-  if(!l.title){ alert('Titre requis'); return; }
-  listings.unshift(l);
-  localStorage.setItem('dt_min_listings', JSON.stringify(listings));
-  ['a-title','a-price','a-desc'].forEach(id=> document.getElementById(id).value='');
-  renderList();
-  alert('Annonce ajoutée (brouillon local).');
+// ---------------- SALES ----------------
+let saleListings = JSON.parse(localStorage.getItem('dt_sales')||'null') || [
+  {id:'S-101', title:'T3 vue mer, Le Gosier', territory:'Guadeloupe', type:'Appartement', price:320000, surface:70, year:2012, taxe:1200, copro:1400, occupied:false, firstSeen:'2025-08-15', history:[['2025-08-15',340000],['2025-09-10',329000],['2025-10-10',320000]]},
+  {id:'S-102', title:'Maison T4, Kourou', territory:'Guyane', type:'Maison', price:410000, surface:110, year:2005, taxe:1576, copro:0, occupied:true, firstSeen:'2025-07-20', history:[['2025-07-20',430000],['2025-09-01',420000],['2025-10-01',410000]]},
+  {id:'S-103', title:'Local commercial, Fort‑de‑France', territory:'Martinique', type:'Local commercial', price:265000, surface:95, year:1998, taxe:2100, copro:2200, occupied:false, firstSeen:'2025-09-05', history:[['2025-09-05',280000],['2025-10-05',265000]]}
+];
+
+function renderSales(){
+  const terr=$('#sl-territory').value; const typ=$('#sl-type').value; const budget=Number($('#sl-budget').value||Infinity);
+  const filtered = saleListings.filter(x=> (!terr||x.territory===terr) && (!typ||x.type===typ) && (x.price<=budget));
+  $('#sl-count').textContent = `(${filtered.length})`;
+  $('#sl-list').innerHTML = filtered.map(x=>`
+    <button class="item" data-id="${x.id}" style="text-align:left">
+      <div>
+        <div><strong>${escapeHTML(x.title)}</strong></div>
+        <div class="muted">${x.territory} • ${x.type} • ${x.surface} m² • ${x.year}</div>
+      </div>
+      <div>
+        <div><strong>${fmtEur(x.price)} €</strong></div>
+        <div class="muted" style="text-align:right">TF ${fmtEur(x.taxe)} € • Copro ${fmtEur(x.copro)} €<br>${x.occupied?'<span class="pill">Occupé</span>':'<span class="pill">Libre</span>'}</div>
+      </div>
+    </button>
+  `).join('');
+}
+['sl-territory','sl-type','sl-budget'].forEach(id=> document.getElementById(id).addEventListener('input', renderSales));
+$('#sl-reset').onclick = ()=>{ ['sl-territory','sl-type','sl-budget'].forEach(id=> document.getElementById(id).value=''); renderSales(); };
+renderSales();
+
+// Sales: modal with since + price history
+$('#sl-list').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.item'); if(!btn) return;
+  const id = btn.dataset.id; const x = saleListings.find(y=>y.id===id); if(!x) return;
+  const first = new Date(x.firstSeen+'T00:00:00');
+  const days = daysBetween(first, new Date());
+  const chart = lineSVG(x.history);
+  $('#m-title').textContent = x.title;
+  $('#m-body').innerHTML = `
+    <div class="row"><span class="pill">Annonce en ligne depuis ${days} jours</span><span class="pill">${x.territory}</span><span class="pill">${x.type}</span></div>
+    <div class="space"></div>
+    <div class="grid two">
+      <div>
+        <div class="muted">Caractéristiques</div>
+        <div>${x.surface} m² • Année ${x.year}</div>
+        <div>Taxe foncière: ${fmtEur(x.taxe)} € • Charges copro: ${fmtEur(x.copro)} €</div>
+        <div>Occupation: ${x.occupied? 'Occupé' : 'Libre'}</div>
+      </div>
+      <div>
+        <div class="muted">Historique des prix</div>
+        ${chart}
+      </div>
+    </div>`;
+  openModal();
+});
+
+function lineSVG(points){
+  const data = points.map(([d,p])=>({d:new Date(d+'T00:00:00'), p:Number(p)}));
+  const w=320,h=140,pad=10; const xs = data.map(o=>o.d.getTime()); const ys = data.map(o=>o.p);
+  const xMin=Math.min(...xs), xMax=Math.max(...xs), yMin=Math.min(...ys), yMax=Math.max(...ys);
+  const x = t=> pad + ( (t - xMin) / (xMax - xMin || 1) ) * (w-2*pad);
+  const y = v=> h-pad - ( (v - yMin) / (yMax - yMin || 1) ) * (h-2*pad);
+  const dpath = data.map((o,i)=> (i? 'L':'M') + x(o.d.getTime()) + ' ' + y(o.p)).join(' ');
+  const dots = data.map(o=> `<circle cx="${x(o.d.getTime())}" cy="${y(o.p)}" r="2"/>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Historique des prix">
+    <rect x="0" y="0" width="${w}" height="${h}" fill="#0f1731" stroke="#1e2a4a"/>
+    <path d="${dpath}" fill="none" stroke="#6ea8fe" stroke-width="2" />
+    ${dots}
+  </svg>`;
+}
+
+// Modal
+function openModal(){ const m = $('#modal'); m.style.display='flex'; m.setAttribute('aria-hidden','false'); }
+function closeModal(){ const m = $('#modal'); m.style.display='none'; m.setAttribute('aria-hidden','true'); }
+$('#m-close').onclick = closeModal; $('#modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') closeModal(); });
+
+// ---------------- ESPACE CLIENT + Docs ----------------
+let currentRole = null;
+$('#btn-start').onclick = ()=>{
+  currentRole = $('#role').value; const email = $('#u-email').value.trim(); if(!email){ alert('Email requis'); return; }
+  $('#doc-card').hidden=false; renderDocs();
 };
+$('#btn-logout').onclick = ()=>{ currentRole=null; $('#doc-actions').innerHTML=''; $('#doc-card').hidden=true; };
 
-// Espace client: simple mock auth
-const userKey = 'dt_min_user';
-let user = JSON.parse(localStorage.getItem(userKey)||'null');
-function refreshAuth(){
-  const aut = $('#auth-card'); const dash = $('#dash-card');
-  if(user){ aut.hidden=true; dash.hidden=false; $('#u-name').textContent=(user.email||'client'); renderUserLists(); }
-  else { aut.hidden=false; dash.hidden=true; }
+function renderDocs(){
+  const wrap = $('#doc-actions');
+  if(currentRole==='Locataire'){
+    wrap.innerHTML = docButton('Générer votre bail (locataire)','bail') + docButton('État des lieux (entrée/sortie)','edl');
+  } else if(currentRole==='Loueur'){
+    wrap.innerHTML = docButton('Générer un bail de location','bail') + docButton('État des lieux','edl');
+  } else { // Vendeur
+    wrap.innerHTML = docButton('Modèle d\'acte de vente (brouillon)','acte');
+  }
 }
-$('#btn-login').onclick = ()=>{ const email = $('#u-email').value.trim(); if(!email){ alert('Email requis'); return; } user = {email}; localStorage.setItem(userKey, JSON.stringify(user)); refreshAuth(); };
-$('#btn-logout').onclick = ()=>{ user=null; localStorage.removeItem(userKey); refreshAuth(); };
-function renderUserLists(){
-  // For the minimal demo, show the two most recent listings as "Favoris" and next two as "Mes annonces".
-  const fav = listings.slice(0,2); const mine = listings.slice(2,4);
-  $('#fav-list').innerHTML = fav.map(x=>`<div class="item"><div>${escapeHTML(x.title)}</div><div class="muted">${fmtEur(x.price)} €</div></div>`).join('');
-  $('#my-list').innerHTML = mine.map(x=>`<div class="item"><div>${escapeHTML(x.title)}</div><div class="muted">${fmtEur(x.price)} €</div></div>`).join('');
-}
-refreshAuth();
+function docButton(label,kind){ return `<button data-doc="${kind}">${escapeHTML(label)}</button>`; }
+$('#doc-actions').addEventListener('click', (e)=>{
+  const b = e.target.closest('button'); if(!b) return; const k=b.dataset.doc; if(k==='bail') genBail(); else if(k==='edl') genEDL(); else genActe();
+});
 
-// Security helper
-function escapeHTML(s=''){ return String(s).replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+// --- Simple printable templates ---
+function downloadHTML(html, filename){ const blob = new Blob([html], {type:'text/html'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); }
+
+function genBail(){
+  const html = `<!doctype html><html lang=fr><head><meta charset=utf-8><title>Bail (brouillon)</title>
+  <style>body{font:14px/1.5 -apple-system,Segoe UI,Roboto,Arial;margin:40px;color:#111}h1{font-size:20px;margin:0 0 6px}hr{border:none;border-top:1px solid #ddd;margin:12px 0}.muted{color:#666}</style></head><body>
+  <h1>Bail d'habitation (brouillon)</h1><hr>
+  <p class=muted>Ce modèle est fourni à titre indicatif. Vérifiez les clauses obligatoires (loi ALUR/ELAN), diagnostics, dépôt de garantie, IRL, inventaire meublé.</p>
+  <p><b>Bailleur:</b> ____________________________________</p>
+  <p><b>Locataire:</b> ___________________________________</p>
+  <p><b>Logement:</b> ____________________________________</p>
+  <p><b>Loyer mensuel:</b> ______ € &nbsp; <b>Charges:</b> ______ € &nbsp; <b>Dépôt:</b> ______ €</p>
+  <p><b>Durée:</b> ____ mois &nbsp; <b>Entrée:</b> ____/____/______</p>
+  <p>Fait à _____________________ le ____/____/______</p>
+  <script>window.print()</script></body></html>`;
+  downloadHTML(html, `bail_${Date.now()}.html`);
+}
+
+function genEDL(){
+  const html = `<!doctype html><html lang=fr><head><meta charset=utf-8><title>État des lieux</title>
+  <style>body{font:14px/1.5 -apple-system,Segoe UI,Roboto,Arial;margin:40px;color:#111}h1{font-size:20px;margin:0 0 6px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ddd;padding:8px;text-align:left}</style></head><body>
+  <h1>État des lieux</h1>
+  <table><thead><tr><th>Pièce</th><th>État / Équipements / Anomalies</th></tr></thead><tbody>
+    <tr><td>Entrée</td><td></td></tr>
+    <tr><td>Séjour</td><td></td></tr>
+    <tr><td>Chambre</td><td></td></tr>
+    <tr><td>Cuisine</td><td></td></tr>
+    <tr><td>Salle d'eau</td><td></td></tr>
+  </tbody></table>
+  <script>window.print()</script></body></html>`;
+  downloadHTML(html, `etat_des_lieux_${Date.now()}.html`);
+}
+
+function genActe(){
+  const html = `<!doctype html><html lang=fr><head><meta charset=utf-8><title>Acte de vente (brouillon)</title>
+  <style>body{font:14px/1.5 -apple-system,Segoe UI,Roboto,Arial;margin:40px;color:#111}h1{font-size:20px;margin:0 0 6px}hr{border:none;border-top:1px solid #ddd;margin:12px 0}.muted{color:#666}</style></head><body>
+  <h1>Acte de vente (brouillon)</h1><hr>
+  <p class=muted>Exemple non opposable. L'acte authentique est reçu par notaire. Ce brouillon sert à préparer les informations (identités, désignation du bien, charges, diagnostics...).</p>
+  <p><b>Vendeur:</b> ____________________________________</p>
+  <p><b>Acheteur:</b> ___________________________________</p>
+  <p><b>Bien:</b> _______________________________________</p>
+  <p><b>Prix:</b> ______ € &nbsp; <b>Occupé:</b> oui/non &nbsp; <b>Charges copro annuelles:</b> ______ €</p>
+  <p><b>Taxe foncière:</b> ______ € &nbsp; <b>Année de construction:</b> ______</p>
+  <script>window.print()</script></body></html>`;
+  downloadHTML(html, `acte_vente_${Date.now()}.html`);
+}
 </script>
 </body>
 </html>
