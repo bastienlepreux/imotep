@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DOM‑TOM Immo – Draft</title>
+  <style>
+    :root{--bg:#0b1020;--card:#121a33;--muted:#9fb0d5;--text:#e9eefc;--accent:#6ea8fe;--ok:#3ddc84;--warn:#ffcc66;--danger:#ff6b6b}
+    html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#0b1020,#0b1020 40%,#0e1836);color:var(--text)}
+    .app{max-width:1100px;margin:0 auto;padding:28px}
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:42px;height:42px;border-radius:12px;background:radial-gradient(80% 80% at 30% 30%,#6ea8fe,transparent 60%),radial-gradient(80% 80% at 70% 60%,#3ddc84,transparent 70%),linear-gradient(135deg,#121a33,#1b2a57);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    h1{font-size:20px;margin:0;letter-spacing:.2px}
+    .sub{color:var(--muted);font-size:12px}
+    .bar{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{border:1px solid rgba(255,255,255,.08);background:#0f1731;color:var(--text);padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer}
+    .btn.primary{background:linear-gradient(180deg,#2a59ff,#2346c7);border:none}
+    .btn.ghost{background:transparent}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .tabs{display:flex;gap:6px;background:#0e1730;border:1px solid rgba(255,255,255,.06);padding:6px;border-radius:14px}
+    .tab{padding:8px 12px;border-radius:10px;cursor:pointer;color:var(--muted)}
+    .tab.active{background:#1a274e;color:var(--text)}
+    .grid{display:grid;grid-template-columns:1.2fr 2fr;gap:18px;margin-top:18px}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    .card h3{margin:0 0 8px 0}
+    .card .pad{padding:16px}
+    .filters{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+    .filters select,.filters input{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0f1731;color:var(--text)}
+    .list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .item{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.06);background:#0f1731}
+    .img{width:110px;height:88px;border-radius:10px;background:#1a274e url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"160\" height=\"120\"><rect width=\"100%\" height=\"100%\" fill=\"%231a274e\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"%239fb0d5\" font-family=\"Arial\" font-size=\"12\">Photo</text></svg>') center/cover}
+    .meta{display:flex;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+    .price{font-weight:800}
+    .badge{font-size:11px;padding:4px 8px;border-radius:999px;background:#14214a;border:1px solid rgba(255,255,255,.06)}
+    .stars{display:inline-flex;gap:2px;cursor:pointer}
+    .stars span{font-size:16px;color:#7aa4ff;opacity:.8}
+    .stars span.active{color:#ffd166;opacity:1}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .kpi{padding:14px;border-radius:14px;background:#0f1731;border:1px solid rgba(255,255,255,.06)}
+    .muted{color:var(--muted)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .small{font-size:12px}
+    .foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+    .link{color:var(--accent);text-decoration:none}
+    .success{color:var(--ok)}
+    pre{white-space:pre-wrap;word-break:break-word}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}.list{grid-template-columns:1fr}.filters{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>DOM‑TOM Immo <span class="badge">Draft</span></h1>
+          <div class="sub">Annonces • Notations • Docs locatifs (100% client‑side)</div>
+        </div>
+      </div>
+      <div class="tabs" role="tablist">
+        <div class="tab active" data-tab="browse" role="tab" aria-selected="true">Parcourir</div>
+        <div class="tab" data-tab="add" role="tab">Déposer</div>
+        <div class="tab" data-tab="docs" role="tab">Documents</div>
+        <div class="tab" data-tab="about" role="tab">À propos</div>
+      </div>
+    </header>
+
+    <!-- KPIs / Filters / List -->
+    <section id="browse" class="grid" role="tabpanel">
+      <div class="card pad">
+        <h3>Filtres</h3>
+        <div class="filters" style="margin-top:10px">
+          <select id="f-territory" aria-label="Territoire">
+            <option value="">DOM‑TOM (tous)</option>
+            <option>Guadeloupe</option>
+            <option>Martinique</option>
+            <option>Guyane</option>
+            <option>La Réunion</option>
+            <option>Mayotte</option>
+            <option>Saint‑Martin</option>
+            <option>Saint‑Barthélemy</option>
+          </select>
+          <select id="f-type" aria-label="Type de bien">
+            <option value="">Type (tous)</option>
+            <option>Appartement</option>
+            <option>Maison</option>
+            <option>Terrain</option>
+            <option>Local</option>
+          </select>
+          <select id="f-mode" aria-label="Location ou Vente">
+            <option value="">Mode (tous)</option>
+            <option>Location</option>
+            <option>Vente</option>
+          </select>
+          <input id="f-q" placeholder="Mots‑clés (plage, T3, parking…)" />
+          <input id="f-budget" placeholder="Budget max (€)" inputmode="numeric" />
+        </div>
+        <div class="kpis" style="margin-top:14px">
+          <div class="kpi"><div class="small muted">Annonces</div><div id="k-ads" style="font-weight:800;font-size:18px">–</div></div>
+          <div class="kpi"><div class="small muted">Prix médian</div><div id="k-med" style="font-weight:800;font-size:18px">–</div></div>
+          <div class="kpi"><div class="small muted">Loc. / Vente</div><div id="k-split" style="font-weight:800;font-size:18px">–</div></div>
+          <div class="kpi"><div class="small muted">Notes publiées</div><div id="k-rates" style="font-weight:800;font-size:18px">–</div></div>
+        </div>
+      </div>
+      <div class="card pad">
+        <div class="foot"><h3>Résultats</h3>
+          <div class="bar">
+            <button class="btn ghost" id="btn-reset">Réinitialiser</button>
+            <button class="btn primary" id="btn-export">Exporter (.json)</button>
+          </div>
+        </div>
+        <div class="list" id="list" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+    <!-- Add Listing -->
+    <section id="add" class="card pad" hidden role="tabpanel">
+      <h3>Déposer une annonce (brouillon)</h3>
+      <div class="two" style="margin-top:12px">
+        <div>
+          <label class="small muted">Titre</label>
+          <input id="a-title" placeholder="T3 vue mer, Le Gosier" />
+        </div>
+        <div>
+          <label class="small muted">Territoire</label>
+          <select id="a-territory"><option>Guadeloupe</option><option>Martinique</option><option>Guyane</option><option>La Réunion</option><option>Mayotte</option><option>Saint‑Martin</option><option>Saint‑Barthélemy</option></select>
+        </div>
+        <div>
+          <label class="small muted">Mode</label>
+          <select id="a-mode"><option>Location</option><option>Vente</option></select>
+        </div>
+        <div>
+          <label class="small muted">Type</label>
+          <select id="a-type"><option>Appartement</option><option>Maison</option><option>Terrain</option><option>Local</option></select>
+        </div>
+        <div>
+          <label class="small muted">Surface (m²)</label>
+          <input id="a-surf" inputmode="numeric" />
+        </div>
+        <div>
+          <label class="small muted">Prix (€ ou €/mois)</label>
+          <input id="a-price" inputmode="numeric" />
+        </div>
+        <div style="grid-column:1 / -1">
+          <label class="small muted">Description</label>
+          <input id="a-desc" placeholder="Cuisine équipée, balcon, parking…" />
+        </div>
+      </div>
+      <div class="foot">
+        <div class="small muted">Les annonces sont stockées dans le navigateur (localStorage) pour ce draft.</div>
+        <div class="bar">
+          <button class="btn ghost" id="btn-clear">Vider le brouillon</button>
+          <button class="btn primary" id="btn-save">Publier dans le brouillon</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Docs -->
+    <section id="docs" class="grid" hidden role="tabpanel">
+      <div class="card pad">
+        <h3>Générer une quittance</h3>
+        <div class="two" style="margin-top:10px">
+          <input id="q-bailleur" placeholder="Bailleur (Nom, adresse)" />
+          <input id="q-loc" placeholder="Locataire (Nom, adresse)" />
+          <input id="q-logt" placeholder="Logement (adresse)" />
+          <input id="q-periode" placeholder="Période (ex: Septembre 2025)" />
+          <input id="q-montant" placeholder="Montant payé (€)" inputmode="numeric" />
+          <input id="q-ville" placeholder="Ville et date (ex: Fort‑de‑France, 30/09/2025)" />
+        </div>
+        <div class="foot">
+          <div class="small muted">Sortie : fichier HTML prêt à imprimer / signer.</div>
+          <button class="btn primary" id="btn-quittance">Générer la quittance</button>
+        </div>
+      </div>
+      <div class="card pad">
+        <h3>État des lieux (entrée/sortie)</h3>
+        <div class="two" style="margin-top:10px">
+          <input id="e-bail" placeholder="Réf. bail" />
+          <input id="e-date" placeholder="Date" />
+          <input id="e-adresse" placeholder="Adresse du logement" />
+          <input id="e-cles" placeholder="Jeux de clés remis" />
+          <input id="e-compteurs" placeholder="Relevés compteurs (Eau/EDF)" />
+          <input id="e-sign" placeholder="Signataires (bailleur/locataire)" />
+        </div>
+        <textarea id="e-rooms" rows="6" style="width:100%;margin-top:8px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0f1731;color:var(--text)" placeholder="Pièce; État murs/sols/portes; Équipements; Anomalies
+Séjour; bon état; volets OK; —
+Cuisine; murs ok; plaque + frigo; poignée à resserrer"></textarea>
+        <div class="foot">
+          <div class="small muted">Sortie : fichier HTML prêt à imprimer / signer sur mobile/tablette.</div>
+          <button class="btn primary" id="btn-etat">Générer l'état des lieux</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- About + Tests (dev) -->
+    <section id="about" class="card pad" hidden role="tabpanel">
+      <h3>À propos de ce brouillon</h3>
+      <p class="muted">Ce prototype 100% statique vise GitHub Pages. Il stocke les annonces/notes côté navigateur, sans backend. À brancher plus tard sur une API (ex. données DOM‑TOM, auth, paiement, KYC).</p>
+      <ul>
+        <li>Catalogue + filtres, stats simples.</li>
+        <li>Notation des intervenants (propriétaire, locataire, agence) par ID.</li>
+        <li>Génération locale de quittance et d'état des lieux (HTML imprimable).</li>
+      </ul>
+      <p class="small muted">⚠️ Les modèles fournis ne remplacent pas un conseil juridique. Adaptez vos mentions (loi Alur/ELAN, indexation IRL, DOM‑TOM spécifiques).</p>
+
+      <div class="card pad" style="margin-top:12px">
+        <h3>Tests (dev)</h3>
+        <div class="bar" style="margin-bottom:8px">
+          <button class="btn" id="btn-test-quittance">Tester quittance</button>
+          <button class="btn" id="btn-test-edl">Tester EDL</button>
+          <button class="btn ghost" id="btn-validate-templates">Valider templates</button>
+        </div>
+        <pre id="test-log" class="small muted">Prêt.</pre>
+      </div>
+    </section>
+  </div>
+
+<script>
+// ------------------ Helpers ------------------
+const $ = (q) => document.querySelector(q);
+function log(msg){ const el = $('#test-log'); if(!el) return; el.textContent += "\n"+msg; }
+
+// ------------------ State ------------------
+const state = {
+  listings: JSON.parse(localStorage.getItem('dt_listings')||'null') || sampleListings(),
+  ratings: JSON.parse(localStorage.getItem('dt_ratings')||'{}'),
+};
+
+function save(){
+  localStorage.setItem('dt_listings', JSON.stringify(state.listings));
+  localStorage.setItem('dt_ratings', JSON.stringify(state.ratings));
+  render();
+}
+
+function sampleListings(){
+  return [
+    {id:'GUA-001', title:'T3 vue mer, Le Gosier', territory:'Guadeloupe', type:'Appartement', mode:'Location', price:1450, surf:70, desc:'Balcon, parking, meublé', score:4},
+    {id:'GUA-002', title:'Villa T5 avec piscine, Saint‑François', territory:'Guadeloupe', type:'Maison', mode:'Vente', price:560000, surf:160, desc:'Quartier calme, 917 m² terrain', score:5},
+    {id:'MTQ-010', title:'Studio centre Fort‑de‑France', territory:'Martinique', type:'Appartement', mode:'Location', price:620, surf:28, desc:'Proche transports', score:3},
+    {id:'GUF-021', title:'Immeuble Pointe‑Noire (2 apt.)', territory:'Guadeloupe', type:'Maison', mode:'Vente', price:370000, surf:200, desc:'Investissement locatif', score:4},
+    {id:'SMX-101', title:'Condo vue lagon, Saint‑Martin', territory:'Saint‑Martin', type:'Appartement', mode:'Vente', price:503858, surf:85, desc:'Rés. sécurisée', score:4},
+    {id:'REU-050', title:'Terrain 500 m² proche plage', territory:'La Réunion', type:'Terrain', mode:'Vente', price:145000, surf:500, desc:'Viabilisé', score:0}
+  ]
+}
+
+// ------------------ Tabs ------------------
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const tab = t.dataset.tab;
+    document.querySelectorAll('[role="tabpanel"]').forEach(s=>s.hidden=true);
+    document.getElementById(tab).hidden=false;
+  })
+});
+
+// ------------------ Filters ------------------
+['f-territory','f-type','f-mode','f-q','f-budget'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', render)
+});
+$('#btn-reset').onclick = () => {
+  ['f-territory','f-type','f-mode','f-q','f-budget'].forEach(id=> document.getElementById(id).value='');
+  render();
+};
+$('#btn-export').onclick = () => {
+  const blob = new Blob([JSON.stringify(state.listings,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'listings.json'; a.click();
+};
+
+// ------------------ Add Listing ------------------
+$('#btn-save').onclick = () => {
+  const l = {
+    id: crypto.randomUUID().slice(0,8),
+    title: $('#a-title').value.trim(),
+    territory: $('#a-territory').value,
+    mode: $('#a-mode').value,
+    type: $('#a-type').value,
+    surf: Number($('#a-surf').value||0),
+    price: Number($('#a-price').value||0),
+    desc: $('#a-desc').value.trim(),
+    score: 0,
+  };
+  if(!l.title){ alert('Titre requis'); return; }
+  state.listings.unshift(l); save();
+  ['a-title','a-surf','a-price','a-desc'].forEach(id=> document.getElementById(id).value='');
+};
+$('#btn-clear').onclick = () => { localStorage.removeItem('dt_listings'); state.listings = sampleListings(); save(); };
+
+// ------------------ Docs: Quittance & EDL ------------------
+$('#btn-quittance').onclick = () => {
+  const data = {
+    bailleur: $('#q-bailleur').value, loc: $('#q-loc').value, logt: $('#q-logt').value,
+    periode: $('#q-periode').value, montant: $('#q-montant').value, ville: $('#q-ville').value
+  };
+  const html = tplQuittance(data);
+  downloadHTML(html, `quittance_${Date.now()}.html`);
+};
+$('#btn-etat').onclick = () => {
+  const data = {
+    bail: $('#e-bail').value, date: $('#e-date').value, adresse: $('#e-adresse').value,
+    cles: $('#e-cles').value, compteurs: $('#e-compteurs').value, sign: $('#e-sign').value,
+    rooms: $('#e-rooms').value
+  };
+  const html = tplEtatDesLieux(data);
+  downloadHTML(html, `etat_des_lieux_${Date.now()}.html`);
+};
+
+function downloadHTML(html, filename){
+  const blob = new Blob([html], {type:'text/html'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+}
+
+function tplQuittance(d){
+  return `<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Quittance – ${esc(d.periode)}</title>
+  <style>body{font:14px/1.4 -apple-system,Segoe UI,Roboto,Arial;margin:40px;color:#111}h1{font-size:20px;margin:0}hr{border:none;border-top:1px solid #ddd;margin:14px 0}.muted{color:#666}.box{border:1px solid #ddd;border-radius:8px;padding:12px}</style>
+</head>
+<body>
+  <h1>Quittance de loyer</h1>
+  <div class="muted">Concerne la période : <b>${esc(d.periode)}</b></div><hr>
+  <div class="box">
+    <p><b>Bailleur</b><br>${nl2br(esc(d.bailleur))}</p>
+    <p><b>Locataire</b><br>${nl2br(esc(d.loc))}</p>
+    <p><b>Logement</b><br>${nl2br(esc(d.logt))}</p>
+    <p>Montant reçu : <b>${esc(d.montant)} €</b></p>
+    <p class="muted">La présente quittance atteste du paiement intégral des loyers et charges pour la période indiquée. À conserver par le locataire.</p>
+  </div>
+  <p style="float:right">${esc(d.ville)}</p>
+  <script>window.print()</script>
+</body>
+</html>`
+}
+
+function tplEtatDesLieux(d){
+  const rows = (d.rooms||'').split('\n').filter(Boolean).map(l=>{
+    const [piece, details] = l.split(';');
+    return `<tr><td>${esc(piece||'')}</td><td>${esc(details||'')}</td></tr>`;
+  }).join('');
+  return `<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>État des lieux – ${esc(d.bail)}</title>
+  <style>body{font:14px/1.4 -apple-system,Segoe UI,Roboto,Arial;margin:40px;color:#111}h1{font-size:20px;margin:0}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ddd;padding:8px;text-align:left}small{color:#666}</style>
+</head>
+<body>
+  <h1>État des lieux</h1>
+  <p><b>Bail:</b> ${esc(d.bail)} &nbsp; • &nbsp; <b>Date:</b> ${esc(d.date)}</p>
+  <p><b>Adresse:</b> ${esc(d.adresse)}</p>
+  <p><b>Clés remises:</b> ${esc(d.cles)} &nbsp; • &nbsp; <b>Compteurs:</b> ${esc(d.compteurs)}</p>
+  <table><thead><tr><th>Pièce</th><th>État / Équipements / Anomalies</th></tr></thead><tbody>${rows}</tbody></table>
+  <p><b>Signataires:</b> ${esc(d.sign)}</p>
+  <small>Fait en deux exemplaires originaux. Joindre photos si nécessaire.</small>
+  <script>window.print()</script>
+</body>
+</html>`
+}
+
+const esc = (s='') => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+const nl2br = s => s.replace(/\n/g,'<br>');
+
+// ------------------ Ratings ------------------
+function starsHTML(entityId){
+  const cur = state.ratings[entityId]||0;
+  return `<div class=stars data-id="${entityId}">`+
+    [1,2,3,4,5].map(i=>`<span data-s="${i}" class="${i<=cur?'active':''}">★</span>`).join('')+
+  `</div>`
+}
+
+document.addEventListener('click', (e)=>{
+  const s = e.target.closest('.stars span');
+  if(!s) return;
+  const wrap = s.closest('.stars');
+  const id = wrap.dataset.id, val = Number(s.dataset.s);
+  state.ratings[id] = val; save();
+});
+
+// ------------------ Render ------------------
+function render(){
+  const list = $('#list');
+  const q = $('#f-q').value.toLowerCase();
+  const territory = $('#f-territory').value; const type=$('#f-type').value; const mode=$('#f-mode').value; const budget = Number($('#f-budget').value||Infinity);
+  const filtered = state.listings.filter(x=>
+    (!territory || x.territory===territory) && (!type || x.type===type) && (!mode || x.mode===mode) && (!q || (x.title+x.desc).toLowerCase().includes(q)) && (x.price<=budget)
+  );
+  // KPIs
+  $('#k-ads').textContent = filtered.length;
+  const prices = filtered.filter(x=>x.mode==='Vente').map(x=>x.price).sort((a,b)=>a-b);
+  const med = prices.length?prices[Math.floor(prices.length/2)].toLocaleString('fr-FR'): '–';
+  $('#k-med').textContent = prices.length? `${med} €`:'–';
+  const loc = filtered.filter(x=>x.mode==='Location').length; const ven = filtered.filter(x=>x.mode==='Vente').length; $('#k-split').textContent = `${loc}/${ven}`;
+  const rates = Object.keys(state.ratings).length; $('#k-rates').textContent = rates;
+
+  list.innerHTML = filtered.map(x=>`
+    <article class="item">
+      <div class="img" role="img" aria-label="photo"></div>
+      <div>
+        <div class="meta"><span class="badge">${x.territory}</span><span class="badge">${x.type}</span><span class="badge">${x.mode}</span></div>
+        <h4 style="margin:6px 0 4px 0">${esc(x.title)}</h4>
+        <div class="meta">${esc(x.desc)}</div>
+        <div class="foot">
+          <div><span class="price">${x.price.toLocaleString('fr-FR')} ${x.mode==='Location'? '€/mois':'€'}</span> • <span class="muted">${x.surf||'—'} m²</span></div>
+          <div>${starsHTML('ENT-'+x.id)}</div>
+        </div>
+      </div>
+    </article>`).join('');
+}
+
+render();
+
+// ------------------ Tests (dev) ------------------
+$('#btn-test-quittance').onclick = () => {
+  try{
+    const sample = {bailleur:'Mme Martin\n12 Rue des Flamboyants\n97110', loc:'M. Dupont\n5 Allée du Lagon\n97190', logt:'T3 – Le Gosier', periode:'Septembre 2025', montant:'1450', ville:'Le Gosier, 30/09/2025'};
+    const html = tplQuittance(sample);
+    const w = window.open('', '_blank'); if(!w){ log('Popup bloquée : test affichage sauté.'); return; }
+    w.document.open(); w.document.write(html); w.document.close();
+    log('Quittance: OK (fenêtre ouverte).');
+  }catch(e){ log('Quittance: erreur → '+e.message); }
+};
+$('#btn-test-edl').onclick = () => {
+  try{
+    const sample = {bail:'B-2025-001', date:'30/09/2025', adresse:'Fort‑de‑France', cles:'2 jeux', compteurs:'Eau 01234 / EDF 05678', sign:'Bailleur & Locataire', rooms:'Séjour; bon état\nCuisine; plaque + frigo'};
+    const html = tplEtatDesLieux(sample);
+    const w = window.open('', '_blank'); if(!w){ log('Popup bloquée : test affichage sauté.'); return; }
+    w.document.open(); w.document.write(html); w.document.close();
+    log('EDL: OK (fenêtre ouverte).');
+  }catch(e){ log('EDL: erreur → '+e.message); }
+};
+$('#btn-validate-templates').onclick = () => {
+  const q = tplQuittance({periode:'TEST', bailleur:'', loc:'', logt:'', montant:'', ville:''});
+  const e = tplEtatDesLieux({bail:'TEST', date:'', adresse:'', cles:'', compteurs:'', sign:'', rooms:''});
+  const hasEndQ = /<\/html>\s*$/.test(q);
+  const hasEndE = /<\/html>\s*$/.test(e);
+  log('Validation: quittance </html>=' + hasEndQ + ', EDL </html>=' + hasEndE);
+};
+</script>
+</body>
+</html>
